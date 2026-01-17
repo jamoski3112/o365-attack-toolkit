@@ -30,7 +30,7 @@
                     <a class="nav-link" href="/about">About</a>
                 </li>
                 <li class="nav-item">
-                    <button style="margin-top: 4px;" class="btn btn-sm btn-danger navbar-btn-sm" onclick="navigator.clipboard.writeText('{{.URL}}')">Get URL</button>
+                    <button style="margin-top: 4px;" class="btn btn-sm btn-danger navbar-btn-sm" data-toggle="modal" data-target="#urlModal" data-url="{{.URL}}">Get URL</button>
                 </li>
             </ul>
         </div>
@@ -41,6 +41,39 @@
         {{ template "content" . }}
 
     </div>
+
+    <div class="modal fade" id="urlModal" tabindex="-1" role="dialog" aria-labelledby="urlModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="urlModalLabel">Phishing URL</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Right-click and copy the link below. Make sure to replace the placeholders with the correct values.</p>
+            <pre id="phishing-url"></pre>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+        $('#urlModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var url = button.data('url');
+            var modal = $(this);
+
+            var highlightedUrl = url.replace(/(redirect_uri=)([^&]+)/, '$1<span class="bg-warning text-dark">$2</span>');
+            highlightedUrl = highlightedUrl.replace(/(client_id=)([^&]+)/, '$1<span class="bg-warning text-dark">$2</span>');
+
+            modal.find('#phishing-url').html(highlightedUrl);
+        });
+    </script>
 
 
     </body>

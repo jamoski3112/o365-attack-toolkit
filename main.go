@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	_ "database/sql"
 	"encoding/json"
 	"fmt"
@@ -16,12 +17,22 @@ import (
 )
 
 func main() {
+	host := flag.String("host", "", "The host to bind the server to. Default is 127.0.0.1")
+	help := flag.Bool("help", false, "Show help")
+	flag.Parse()
 
+	if *help {
+		flag.Usage()
+		os.Exit(0)
+	}
 	model.GlbConfig = model.Config{}
 	err := gcfg.ReadFileInto(&model.GlbConfig, "template.conf")
 
 	if err != nil {
 		log.Fatal(err.Error())
+	}
+	if *host != "" {
+		model.GlbConfig.Server.Host = *host
 	}
 
 	//initializeRules()

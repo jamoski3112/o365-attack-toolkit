@@ -19,7 +19,7 @@ import (
 // This will contain the template functions
 
 func ExecuteTemplate(w http.ResponseWriter, page model.Page, templatePath string) {
-
+	page.URL = api.GenerateURL()
 	tpl, err := template.ParseFiles("templates/main.html", templatePath)
 	if err != nil {
 		log.Fatal(err)
@@ -44,7 +44,6 @@ func ExecuteSingleTemplate(w http.ResponseWriter, page model.Page, templatePath 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	Page := model.Page{}
 	Page.Title = "Users"
-	Page.URL = api.GenerateURL()
 	Page.UserList = database.GetUsers()
 	ExecuteTemplate(w, Page, "templates/users.html")
 }

@@ -16,7 +16,7 @@ func StartIntServer(config model.Config) {
 	// Start the update token function
 	go api.RecursiveTokenUpdate()
 
-	log.Printf("Starting Internal Server on 127.0.0.1:%d \n", config.Server.InternalPort)
+	log.Printf("Starting Internal Server on %s:%d \n", config.Server.Host, config.Server.InternalPort)
 
 	route := mux.NewRouter()
 
@@ -83,9 +83,14 @@ func GetToken(w http.ResponseWriter, r *http.Request) {
 	} else {
 
 		jsonData := api.GetAllTokens(r.FormValue("code"))
+		log.Printf("jsonData from GetAllTokens: %s", string(jsonData))
 		if jsonData != nil {
 			authResponse := model.AuthResponse{}
-			json.Unmarshal(jsonData, &authResponse)
+			err := json.Unmarshal(jsonData, &authResponse)
+			if err != nil {
+				log.Printf("Error unmarshaling auth response: %s", err)
+			}
+			log.Printf("authResponse: %+v", authResponse)
 
 			api.InitializeProfile(authResponse.AccessToken, authResponse.RefreshToken)
 		}

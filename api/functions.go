@@ -132,14 +132,19 @@ func CallAPIMethod(method string, endpoint string, accessToken string, additiona
 
 // InitializeProfile Initializes the user in the database
 func InitializeProfile(accessToken string, refreshToken string) {
-
+	log.Printf("accessToken in InitializeProfile: %s", accessToken)
 	userResponse, _ := CallAPIMethod("GET", "/me", accessToken, "", nil, "")
+	log.Printf("User response: %s", userResponse)
 	user := model.User{}
 	user.AccessToken = accessToken
 	user.AccessTokenActive = 1
 	user.RefreshToken = refreshToken
 
-	json.Unmarshal([]byte(userResponse), &user)
+	err := json.Unmarshal([]byte(userResponse), &user)
+	if err != nil {
+		log.Printf("Error unmarshaling user response: %s", err)
+	}
+	log.Printf("Unmarshaled user: %+v", user)
 
 	user.Mail = user.UserPrincipalName
 	log.Printf("Successful authentication from: %s", user.Mail)
